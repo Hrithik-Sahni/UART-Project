@@ -18,59 +18,135 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
+
+//module TX_CONTROLLER(
+//    input clk,tx_start,reset,
+//    output reg load,shift,
+//    output reg [1:0] sel
+//    );
+//	 reg [2:0] state;
+//	 reg [2:0] next_state;
+//	 reg [3:0] count = 4'd0;
+//	 
+//	 parameter Idle = 3'b000 , Start = 3'b001 , Data = 3'b010 , Parity = 3'b011 , Stop = 3'b100;
+//	 
+//	 always @(*)
+//		begin
+//			case(state)
+//			
+//			Idle   : begin
+//							next_state = tx_start ? Start : Idle;
+//							load = 0;
+//							shift = 0;
+//							sel = 2'b11;
+//						end
+//			
+//			Start  : begin
+//							next_state = Data;
+//							load = 1;
+//							shift = 0;
+//							count = 4'd0;
+//							sel = 2'b00;
+//						end
+//			
+//			Data   : begin
+//							next_state = (count == 4'b1000) ? Parity : Data;
+//							load = 0;
+//							shift = 1;
+//							sel = 2'b01;
+//						end
+//			
+//			Parity : begin
+//							next_state = Stop;
+//							load = 0;
+//							shift = 0;
+//							sel = 2'b10;
+//						end
+//			Stop   :	begin		
+//							next_state = tx_start ? Start : Idle;
+//							load = 0;
+//							shift = 0;
+//							sel = 2'b11;
+//						end
+//			endcase
+//		end
+//		
+//	always @(posedge clk , negedge reset)
+//		begin
+//			if(!reset)
+//				count <= 0;
+//			else if(state == Data)
+//				count <= count + 1;
+//			else
+//				count <= count;
+//		end
+//		
+//	always @(posedge clk)
+//		begin
+//			if(!reset)
+//				state <= Idle;
+//			else
+//				state <= next_state;
+//		end	
+//endmodule
+
 module TX_CONTROLLER(
-    input clk,tx_start,reset,
+    input clk,start,reset,
     output reg load,shift,
-    output reg [1:0] sel
+    output reg [1:0] SEL
     );
+	 
+ parameter Idle = 3'd0, Start = 3'd1, Data = 3'd2, Parity = 3'd3, Stop = 3'd4;
 	 reg [2:0] state;
 	 reg [2:0] next_state;
-	 reg [3:0] count = 4'd0;
+	 reg [3:0]count = 4'd0;
 	 
-	 parameter Idle = 3'b000 , Start = 3'b001 , Data = 3'b010 , Parity = 3'b011 , Stop = 3'b100;
-	 
-	 always @(*)
-		begin
-			case(state)
-			
-			Idle   : begin
-							next_state = tx_start ? Start : Idle;
-							load = 0;
-							shift = 0;
-							sel = 2'b11;
-						end
-			
-			Start  : begin
-							next_state = Data;
-							load = 1;
-							shift = 0;
-							count = 4'd0;
-							sel = 2'b00;
-						end
-			
-			Data   : begin
-							next_state = (count == 4'b1000) ? Parity : Data;
-							load = 0;
-							shift = 1;
-							sel = 2'b01;
-						end
-			
-			Parity : begin
-							next_state = Stop;
-							load = 0;
-							shift = 0;
-							sel = 2'b10;
-						end
-			Stop   :	begin		
-							next_state = tx_start ? Start : Idle;
-							load = 0;
-							shift = 0;
-							sel = 2'b11;
-						end
-			endcase
-		end
-		
-	always @(posedge clk , negedge reset)
+	 always@(*)
+	 begin
+	 case(state)
+	 Idle : begin
+					next_state = start? Start:Idle;
+					shift = 0;
+					load = 0;
+					SEL = 2'b11;
+			end
+	 Start : begin
+					next_state = Data;
+					shift = 0;
+					load = 1;
+					SEL = 2'b00;
+			 end
+	 Data : begin 
+	            next_state = (count == 4'd8)?Parity:Data;
+					load = 0;
+					shift =1;
+					SEL = 2'b01;
+			end
+	 Parity : begin
+					next_state = Stop;
+					shift = 0;
+					load = 0;
+					SEL = 2'b10;
+			 end
+	 Stop : begin 
+	            next_state = start? Start:Idle;
+					shift = 0;
+					load = 0;
+					SEL = 2'b11;
+			 end
+					
+	endcase
+	end
+	always@(posedge clk or negedge reset) 
+	begin
+	if(!reset)
+	state <= Idle;
+   	else 
+	state <= next_state;
+	end  
+	
+	
+	always@(posedge clk , negedge reset)
 		begin
 			if(!reset)
 				count <= 0;
@@ -79,12 +155,6 @@ module TX_CONTROLLER(
 			else
 				count <= count;
 		end
-		
-	always @(posedge clk , negedge reset)
-		begin
-			if(!reset)
-				state <= Idle;
-			else
-				state <= next_state;
-		end	
+	
 endmodule
+

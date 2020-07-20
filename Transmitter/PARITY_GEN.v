@@ -24,7 +24,7 @@ module PARITY_GEN(
     output reg parity
     );
 	 reg [7:0] temp = 8'd0;
-	 always @(load , temp , data)
+	 always @(*)
 		begin
 			if(load)
 				temp = data; //Load the data in temp

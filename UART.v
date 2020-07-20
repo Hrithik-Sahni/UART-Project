@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date:    18:16:38 07/08/2020 
+// Create Date:    19:49:53 07/18/2020 
 // Design Name: 
-// Module Name:    START_DECT 
+// Module Name:    UART 
 // Project Name: 
 // Target Devices: 
 // Tool versions: 
@@ -18,16 +18,21 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-
-module START_DECT(
-    input start_in,
-    output reg out
+module UART(
+    input [7:0] data_in,
+    input clk,reset,txstart,
+	 input [1:0] baurd_sel,
+    output [7:0] data_out,
+    output parity_error,stop_error
     );
 	 
-	 always @(start_in)
-		begin
-			out = (start_in == 0) ? 1'b1 : 1'b0;
-		end
+	 wire msg,baurd_clk;
+	 
+	BAUD_GENERATOR BAUD_GEN(clk,reset,baurd_sel,baurd_clk);
+
+	TX_MODULE TX(baurd_clk,reset,txstart,data_in,msg);
+
+	RX_MODULE RX(baurd_clk,reset,msg,data_out,stop_error,parity_error);
 
 
 endmodule

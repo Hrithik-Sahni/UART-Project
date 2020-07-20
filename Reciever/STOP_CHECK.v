@@ -18,6 +18,9 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
+
+
+
 module STOP_CHECK(
     input rx_in,check_stop,
     input [7:0] data_in,
@@ -25,18 +28,21 @@ module STOP_CHECK(
     output reg stop_error
     );
 	 
-	 always @(rx_in , check_stop)
+	 always @(*)
 	 begin
-		if(check_stop == 1'b1 && rx_in == 1'b1)
+		if(check_stop==1)
 			begin
-				data_out = data_in;
-				stop_error = 1'b0; 
-			end
-		else
-			begin
-				data_out = 8'b0;
-				stop_error = 1'b1;
-			end
+				if(rx_in==1)
+					begin
+						data_out = data_in;
+						stop_error = 1'b0; 
+					end
+				else
+					begin
+						data_out = 8'd0;
+						stop_error = 1'b1;
+					end
+			end	
 	 end
 	
 

@@ -44,29 +44,26 @@ module rx_tb;
 		.parity_error(parity_error)
 	);
 
+    initial begin
+	 clk=0;
+	 forever #5 clk=~clk;
+	 end
 	initial begin
-		clk = 0;
-		forever #5 clk = ~clk;
-	end
+		reset=0;rx_inp=0;
+		#4 reset=1;
+		#1 rx_inp=0;
+		#10 rx_inp=1;
+		#10 rx_inp=0;
+		#10 rx_inp=1;
+		#10 rx_inp=0;
+		#10 rx_inp=0;
+		#10 rx_inp=1;
+		#10 rx_inp=1;
+		#10 rx_inp=1;
+		#10 rx_inp=1;
+		#10 rx_inp=1;
 		
-	initial begin
-		// Initialize Inputs
-		reset = 0;
-		#15 reset = 1;
-		
-		rx_inp = 0;
-		#10 rx_inp = 1;
-		#10 rx_inp = 1;
-		#10 rx_inp = 0;
-		#10 rx_inp = 0;
-		#10 rx_inp = 1;		
-		#10 rx_inp = 1;
-		#10 rx_inp = 0;
-		#10 rx_inp = 0;
-		#10 rx_inp = 0;
-		#10 rx_inp = 1;
-		
-		
+
 	end
       
 endmodule
